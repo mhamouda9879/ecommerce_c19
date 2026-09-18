@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/features/auth/data/repositories/auth_repo_impl.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1789722664737,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1789722718738,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,16 @@\n-class AuthRepoImpl {}\n+import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n+import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';\n+\n+class AuthRepositoryImpl implements AuthRepository {\n+  \n+  @override\n+  Future<AuthResponse> signUpWithEmailAndPassword(\n+    String email,\n+    String password,\n+    String name,\n+    String phone,\n+  ) {\n+    // Implementation for signing up with email and password\n+    throw UnimplementedError();\n+  }\n+}\n"
+                },
+                {
+                    "date": 1789722842113,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,26 @@\n+import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';\n import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';\n \n class AuthRepositoryImpl implements AuthRepository {\n+  AuthRemoteDataSource authRemoteDataSource;\n+  AuthRepositoryImpl({required this.authRemoteDataSource});\n   @override\n   Future<AuthResponse> signUpWithEmailAndPassword(\n     String email,\n     String password,\n     String name,\n     String phone,\n   ) {\n-    // Implementation for signing up with email and password\n-    throw UnimplementedError();\n+    try {\n+      return authRemoteDataSource.signUpWithEmailAndPassword(\n+        email,\n+        password,\n+        name,\n+        phone,\n+      );\n+    } catch (e) {\n+      throw Exception('Failed to sign up: $e');\n+    }\n   }\n }\n"
+                }
+            ],
+            "date": 1789722664737,
+            "name": "Commit-0",
+            "content": "class AuthRepoImpl {}"
+        }
+    ]
+}

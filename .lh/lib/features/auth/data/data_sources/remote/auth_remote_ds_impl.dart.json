@@ -1,0 +1,34 @@
+{
+    "sourceFile": "lib/features/auth/data/data_sources/remote/auth_remote_ds_impl.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1789722782715,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1789722890884,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,19 @@\n+import 'package:dio/dio.dart';\n import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';\n import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n \n class AuthRemoteDsImpl implements AuthRemoteDataSource {\n+\n+Dio dio=Dio();\n+\n   @override\n   Future<AuthResponse> signUpWithEmailAndPassword(\n     String email,\n     String password,\n     String name,\n     String phone,\n   ) {\n-    // Implementation for signing up with email and password\n-    throw UnimplementedError();\n+   \n+   dio.post(\"\")\n   }\n }\n"
+                },
+                {
+                    "date": 1789722908049,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,18 +2,31 @@\n import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';\n import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n \n class AuthRemoteDsImpl implements AuthRemoteDataSource {\n+  Dio dio = Dio();\n \n-Dio dio=Dio();\n-\n   @override\n   Future<AuthResponse> signUpWithEmailAndPassword(\n     String email,\n     String password,\n     String name,\n     String phone,\n   ) {\n-   \n-   dio.post(\"\")\n+    dio\n+        .post(\n+          \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n+          data: {\n+            \"email\": email,\n+            \"password\": password,\n+            \"name\": name,\n+            \"phone\": phone,\n+          },\n+        )\n+        .then((value) {\n+          print(value.data);\n+        })\n+        .catchError((error) {\n+          print(error.toString());\n+        });\n   }\n }\n"
+                },
+                {
+                    "date": 1789722917843,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n           \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n           data: {\n             \"email\": email,\n             \"password\": password,\n+            \n             \"name\": name,\n             \"phone\": phone,\n           },\n         )\n"
+                },
+                {
+                    "date": 1789723029585,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,24 +10,23 @@\n     String email,\n     String password,\n     String name,\n     String phone,\n-  ) {\n-    dio\n-        .post(\n-          \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n-          data: {\n-            \"email\": email,\n-            \"password\": password,\n+  ) async {\n+    try {\n+      var result = await dio.post(\n+        \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n+        data: {\n+          \"email\": email,\n+          \"password\": password,\n+          \"rePassword\": password,\n+          \"name\": name,\n+          \"phone\": phone,\n+        },\n+      );\n \n-            \"name\": name,\n-            \"phone\": phone,\n-          },\n-        )\n-        .then((value) {\n-          print(value.data);\n-        })\n-        .catchError((error) {\n-          print(error.toString());\n-        });\n+      return AuthResponse.fromJson(result.data);\n+    } catch (e) {\n+      rethrow;\n+    }\n   }\n }\n"
+                }
+            ],
+            "date": 1789722782715,
+            "name": "Commit-0",
+            "content": "import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';\nimport 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n\nclass AuthRemoteDsImpl implements AuthRemoteDataSource {\n  @override\n  Future<AuthResponse> signUpWithEmailAndPassword(\n    String email,\n    String password,\n    String name,\n    String phone,\n  ) {\n    // Implementation for signing up with email and password\n    throw UnimplementedError();\n  }\n}\n"
+        }
+    ]
+}

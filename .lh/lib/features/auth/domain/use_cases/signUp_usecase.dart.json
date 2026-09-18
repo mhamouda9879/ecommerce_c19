@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/features/auth/domain/use_cases/signUp_usecase.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1789722521998,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1789722586004,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,22 @@\n+import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n+import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';\n+\n class SignUpUseCase {\n   final AuthRepository authRepository;\n \n   SignUpUseCase({required this.authRepository});\n \n-  Future<void> execute(String email, String password) async {\n-    await authRepository.signUp(email, password);\n+  Future<AuthResponse> call(\n+    String email,\n+    String password,\n+    String name,\n+    String phone,\n+  ) async {\n+    return await authRepository.signUpWithEmailAndPassword(\n+      email,\n+      password,\n+      name,\n+      phone,\n+    );\n   }\n }\n"
+                }
+            ],
+            "date": 1789722521998,
+            "name": "Commit-0",
+            "content": "class SignUpUseCase {\n  final AuthRepository authRepository;\n\n  SignUpUseCase({required this.authRepository});\n\n  Future<void> execute(String email, String password) async {\n    await authRepository.signUp(email, password);\n  }\n}\n"
+        }
+    ]
+}

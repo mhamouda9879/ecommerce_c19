@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/features/auth/data/data_sources/remote/auth_remote_ds.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1789722765343,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1789722765343,
+            "name": "Commit-0",
+            "content": "import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n\nabstract class AuthRemoteDataSource {\n  Future<AuthResponse> signUpWithEmailAndPassword(\n    String email,\n    String password,\n    String name,\n    String phone,\n  );\n}\n"
+        }
+    ]
+}
