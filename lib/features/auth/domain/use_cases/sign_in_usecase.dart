@@ -5,22 +5,15 @@ import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class SignUpUseCase {
+class SignInUseCase {
   final AuthRepository authRepository;
 
-  SignUpUseCase({required this.authRepository});
+  SignInUseCase({required this.authRepository});
 
   Future<Either<Failure, AuthResponse>> call({
     required String email,
     required String password,
-    required String name,
-    required String phone,
   }) {
-    return authRepository.signUpWithEmailAndPassword(
-      email,
-      password,
-      name,
-      phone,
-    );
+    return authRepository.signInWithEmailAndPassword(email, password);
   }
 }

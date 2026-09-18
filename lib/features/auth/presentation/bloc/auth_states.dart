@@ -6,22 +6,26 @@ class AuthState {
   AuthResponse? authResponse;
   String? errorMessage;
   RequestStatus? signUpRequestStatus;
+  RequestStatus? signInRequestStatus;
 
   AuthState({
     this.authResponse,
     this.errorMessage,
     this.signUpRequestStatus = RequestStatus.init,
+    this.signInRequestStatus = RequestStatus.init,
   });
 
   AuthState copyWith({
     AuthResponse? authResponse,
     String? errorMessage,
     RequestStatus? signUpRequestStatus,
+    RequestStatus? signInRequestStatus,
   }) {
     return AuthState(
       authResponse: authResponse ?? this.authResponse,
       errorMessage: errorMessage ?? this.errorMessage,
       signUpRequestStatus: signUpRequestStatus ?? this.signUpRequestStatus,
+      signInRequestStatus: signInRequestStatus ?? this.signInRequestStatus,
     );
   }
 }

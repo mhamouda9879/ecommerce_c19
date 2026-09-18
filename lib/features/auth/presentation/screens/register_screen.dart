@@ -40,18 +40,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       create: (context) => getIt<AuthBloc>(),
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state.signUpRequestStatus == RequestStatus.loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Signing up...')));
-          } else if (state.signUpRequestStatus == RequestStatus.success) {
+          if (state.signUpRequestStatus == RequestStatus.success) {
             Navigator.pushReplacementNamed(context, AppRoutes.login);
           } else if (state.signUpRequestStatus == RequestStatus.error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'An error occurred'),
-              ),
-            );
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage ?? 'An error occurred'),
+                ),
+              );
           }
         },
         builder: (context, state) {
@@ -102,6 +100,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 56),
                       AuthButton(
                         text: 'Sign up',
+                        isLoading:
+                            state.signUpRequestStatus == RequestStatus.loading,
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
 

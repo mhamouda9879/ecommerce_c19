@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/core/errors/error_handler.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1789730936432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1789731739812,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,15 +2,8 @@\n import 'package:dio/dio.dart';\n \n import 'package:ecommerce_c19/core/errors/failures.dart';\n \n-/// Runs an API call and returns its result, or the [Failure] it threw.\n-///\n-/// Wrap every repository method in this so all APIs report errors the same\n-/// way:\n-/// ```dart\n-/// return safeApiCall(() => remoteDataSource.signIn(email, password));\n-/// ```\n Future<Either<Failure, T>> safeApiCall<T>(Future<T> Function() call) async {\n   try {\n     return Right(await call());\n   } catch (error) {\n"
+                }
+            ],
+            "date": 1789730936432,
+            "name": "Commit-0",
+            "content": "import 'package:dartz/dartz.dart';\nimport 'package:dio/dio.dart';\n\nimport 'package:ecommerce_c19/core/errors/failures.dart';\n\n\nFuture<Either<Failure, T>> safeApiCall<T>(Future<T> Function() call) async {\n  try {\n    return Right(await call());\n  } catch (error) {\n    return Left(mapErrorToFailure(error));\n  }\n}\n\nFailure mapErrorToFailure(Object error) => switch (error) {\n  DioException(\n    type:\n        DioExceptionType.connectionTimeout ||\n        DioExceptionType.sendTimeout ||\n        DioExceptionType.receiveTimeout,\n  ) =>\n    const NetworkFailure('The connection timed out, please try again'),\n  DioException(type: DioExceptionType.connectionError) => const NetworkFailure(\n    'No internet connection',\n  ),\n  DioException(type: DioExceptionType.badResponse, :final response) =>\n    ServerFailure(\n      _serverMessage(response),\n      statusCode: response?.statusCode,\n    ),\n  DioException(type: DioExceptionType.cancel) => const UnknownFailure(\n    'The request was cancelled',\n  ),\n  _ => const UnknownFailure(),\n};\n\n/// Route API errors come in two shapes:\n/// `{\"statusMsg\": \"fail\", \"message\": \"Incorrect email or password\"}` and\n/// `{\"message\": \"fail\", \"errors\": {\"msg\": \"Invalid email\", ...}}`.\nString _serverMessage(Response<dynamic>? response) {\n  final data = response?.data;\n  if (data is Map) {\n    final errors = data['errors'];\n    if (errors is Map && errors['msg'] is String) {\n      return (errors['msg'] as String).trim();\n    }\n    final message = data['message'];\n    if (message is String && message != 'fail') return message;\n  }\n  final statusCode = response?.statusCode ?? 0;\n  return statusCode >= 500\n      ? 'Server error, please try again later'\n      : 'Something went wrong, please try again';\n}\n"
+        }
+    ]
+}

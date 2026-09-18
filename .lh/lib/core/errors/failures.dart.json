@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/core/errors/failures.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1789730966304,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1789730966304,
+            "name": "Commit-0",
+            "content": "sealed class Failure {\n  const Failure(this.message);\n\n  final String message;\n}\n\nclass ServerFailure extends Failure {\n  const ServerFailure(super.message, {this.statusCode});\n\n  final int? statusCode;\n}\n\nclass NetworkFailure extends Failure {\n  const NetworkFailure(super.message);\n}\n\nclass UnknownFailure extends Failure {\n  const UnknownFailure([\n    super.message = 'Something went wrong, please try again',\n  ]);\n}\n"
+        }
+    ]
+}

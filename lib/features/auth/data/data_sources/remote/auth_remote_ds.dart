@@ -7,4 +7,9 @@ abstract class AuthRemoteDataSource {
     String name,
     String phone,
   );
+
+  Future<AuthResponse> signInWithEmailAndPassword(
+    String email,
+    String password,
+  );
 }
