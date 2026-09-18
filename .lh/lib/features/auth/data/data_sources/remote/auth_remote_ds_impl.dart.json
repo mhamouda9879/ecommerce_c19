@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1789722782715,
@@ -24,6 +24,10 @@
                 {
                     "date": 1789723029585,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,24 +10,23 @@\n     String email,\n     String password,\n     String name,\n     String phone,\n-  ) {\n-    dio\n-        .post(\n-          \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n-          data: {\n-            \"email\": email,\n-            \"password\": password,\n+  ) async {\n+    try {\n+      var result = await dio.post(\n+        \"https://ecommerce.routemisr.com/api/v1/auth/signup\",\n+        data: {\n+          \"email\": email,\n+          \"password\": password,\n+          \"rePassword\": password,\n+          \"name\": name,\n+          \"phone\": phone,\n+        },\n+      );\n \n-            \"name\": name,\n-            \"phone\": phone,\n-          },\n-        )\n-        .then((value) {\n-          print(value.data);\n-        })\n-        .catchError((error) {\n-          print(error.toString());\n-        });\n+      return AuthResponse.fromJson(result.data);\n+    } catch (e) {\n+      rethrow;\n+    }\n   }\n }\n"
+                },
+                {
+                    "date": 1789725167160,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,10 @@\n import 'package:dio/dio.dart';\n import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';\n import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';\n+import 'package:injectable/injectable.dart';\n \n+@Injectable(as: AuthRemoteDataSource)\n class AuthRemoteDsImpl implements AuthRemoteDataSource {\n   Dio dio = Dio();\n \n   @override\n"
                 }
             ],
             "date": 1789722782715,

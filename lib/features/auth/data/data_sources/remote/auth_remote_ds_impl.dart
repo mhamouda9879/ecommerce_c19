@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';
 import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';
+import 'package:injectable/injectable.dart';
 
+@Injectable(as: AuthRemoteDataSource)
 class AuthRemoteDsImpl implements AuthRemoteDataSource {
   Dio dio = Dio();
 

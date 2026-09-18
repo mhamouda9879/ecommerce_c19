@@ -1,3 +1,4 @@
+import 'package:ecommerce_c19/di.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/routes/app_routes.dart';
@@ -10,7 +11,9 @@ import 'package:ecommerce_c19/features/products/presentation/screens/product_det
 import 'package:ecommerce_c19/features/products/presentation/screens/products_screen.dart';
 import 'package:ecommerce_c19/features/splash/presentation/screens/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
   runApp(const MyApp());
 }
 

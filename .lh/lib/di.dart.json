@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/di.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1789724894725,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1789724922743,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+import 'package:get_it/get_it.dart';\n+import 'package:injectable/injectable.dart';\n+\n import 'di.config.dart';\n \n final getIt = GetIt.instance;\n \n"
+                }
+            ],
+            "date": 1789724894725,
+            "name": "Commit-0",
+            "content": "import 'di.config.dart';\n\t\nfinal getIt = GetIt.instance;  \n  \n@InjectableInit(  \n  initializerName: 'init', // default  \n  preferRelativeImports: true, // default  \n  asExtension: true, // default  \n)  \nvoid configureDependencies() => getIt.init();"
+        }
+    ]
+}
