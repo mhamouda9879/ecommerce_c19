@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1789730936432,
@@ -11,6 +11,10 @@
                 },
                 {
                     "date": 1789731739812,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,15 +2,8 @@\n import 'package:dio/dio.dart';\n \n import 'package:ecommerce_c19/core/errors/failures.dart';\n \n-/// Runs an API call and returns its result, or the [Failure] it threw.\n-///\n-/// Wrap every repository method in this so all APIs report errors the same\n-/// way:\n-/// ```dart\n-/// return safeApiCall(() => remoteDataSource.signIn(email, password));\n-/// ```\n Future<Either<Failure, T>> safeApiCall<T>(Future<T> Function() call) async {\n   try {\n     return Right(await call());\n   } catch (error) {\n"
+                },
+                {
+                    "date": 1789732864126,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,15 +2,8 @@\n import 'package:dio/dio.dart';\n \n import 'package:ecommerce_c19/core/errors/failures.dart';\n \n-/// Runs an API call and returns its result, or the [Failure] it threw.\n-///\n-/// Wrap every repository method in this so all APIs report errors the same\n-/// way:\n-/// ```dart\n-/// return safeApiCall(() => remoteDataSource.signIn(email, password));\n-/// ```\n Future<Either<Failure, T>> safeApiCall<T>(Future<T> Function() call) async {\n   try {\n     return Right(await call());\n   } catch (error) {\n"
                 }
             ],

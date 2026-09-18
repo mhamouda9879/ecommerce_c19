@@ -50,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
             previous.signInRequestStatus != current.signInRequestStatus,
         listener: (context, state) {
           if (state.signInRequestStatus == RequestStatus.success) {
-            // TODO: save state.authResponse!.token for authenticated APIs.
             Navigator.pushReplacementNamed(context, AppRoutes.main);
           } else if (state.signInRequestStatus == RequestStatus.error) {
             ScaffoldMessenger.of(context)

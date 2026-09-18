@@ -6,9 +6,10 @@ abstract class AppRoutes {
   /// Bottom-nav shell. Optional `int` argument selects the starting tab.
   static const main = '/main';
 
+  /// Optional `ProductsQuery` argument (filters, sort, paging).
   static const products = '/products';
 
-  /// Expects a `DummyProduct` argument.
+  /// Expects the product id (`String`) as argument.
   static const productDetails = '/product-details';
 
   static const cart = '/cart';

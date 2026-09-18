@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 
+import 'package:ecommerce_c19/core/routes/app_routes.dart';
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
 import 'package:ecommerce_c19/core/utils/dummy_data.dart';
 import 'package:ecommerce_c19/core/widgets/app_header.dart';
+import 'package:ecommerce_c19/di.dart';
+import 'package:ecommerce_c19/features/auth/domain/use_cases/logout_usecase.dart';
 import 'package:ecommerce_c19/features/profile/presentation/widgets/profile_field.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+    await getIt<LogoutUseCase>()();
+    if (!context.mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (_) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +60,19 @@ class ProfileTab extends StatelessWidget {
               ProfileField(label: 'Your mobile number', value: user.phone),
               const SizedBox(height: 24),
               ProfileField(label: 'Your Address', value: user.address),
+              const SizedBox(height: 32),
+              TextButton.icon(
+                onPressed: () => _logout(context),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: EdgeInsets.zero,
+                ),
+                icon: const Icon(Icons.logout),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ),
             ],
           ),
         ),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
-import 'package:ecommerce_c19/core/utils/dummy_data.dart';
 import 'package:ecommerce_c19/core/utils/price_formatter.dart';
 import 'package:ecommerce_c19/core/widgets/app_network_image.dart';
 import 'package:ecommerce_c19/core/widgets/favorite_button.dart';
+import 'package:ecommerce_c19/features/products/domain/entities/product_entity.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, required this.onTap});
 
-  final DummyProduct product;
+  final ProductEntity product;
   final VoidCallback onTap;
 
   @override
@@ -64,11 +64,11 @@ class ProductCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Row(
                       children: [
-                        Text(formatPrice(product.price), style: textStyle),
-                        if (product.oldPrice case final oldPrice?) ...[
+                        Text(formatPrice(product.finalPrice), style: textStyle),
+                        if (product.priceAfterDiscount != null) ...[
                           const SizedBox(width: 12),
                           Text(
-                            formatPrice(oldPrice),
+                            formatPrice(product.price),
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.oldPrice,
@@ -87,7 +87,7 @@ class ProductCard extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                'Review (${product.rating.toStringAsFixed(1)})',
+                                'Review (${product.ratingsAverage.toStringAsFixed(1)})',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontSize: 12),

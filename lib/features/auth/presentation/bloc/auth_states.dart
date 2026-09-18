@@ -1,6 +1,7 @@
+import 'package:ecommerce_c19/core/utils/request_status.dart';
 import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';
 
-enum RequestStatus { init, loading, success, error }
+export 'package:ecommerce_c19/core/utils/request_status.dart';
 
 class AuthState {
   AuthResponse? authResponse;

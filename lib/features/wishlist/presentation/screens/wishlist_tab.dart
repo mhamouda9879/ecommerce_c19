@@ -26,7 +26,7 @@ class WishlistTab extends StatelessWidget {
               onTap: () => Navigator.pushNamed(
                 context,
                 AppRoutes.productDetails,
-                arguments: items[index].product,
+                arguments: items[index].product.id,
               ),
             ),
           ),

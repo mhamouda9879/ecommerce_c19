@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
 import 'package:ecommerce_c19/core/utils/app_assets.dart';
 import 'package:ecommerce_c19/core/routes/app_routes.dart';
+import 'package:ecommerce_c19/di.dart';
+import 'package:ecommerce_c19/features/auth/domain/use_cases/is_logged_in_usecase.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,10 +19,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
-    });
+    _openNextScreen();
+  }
+
+  Future<void> _openNextScreen() async {
+    final (isLoggedIn, _) = await (
+      getIt<IsLoggedInUseCase>()(),
+      Future<void>.delayed(const Duration(seconds: 2)),
+    ).wait;
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(
+      context,
+      isLoggedIn ? AppRoutes.main : AppRoutes.login,
+    );
   }
 
   @override

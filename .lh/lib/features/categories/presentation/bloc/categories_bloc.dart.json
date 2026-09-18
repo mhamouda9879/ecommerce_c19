@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/features/categories/presentation/bloc/categories_bloc.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1789732779752,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1789732779752,
+            "name": "Commit-0",
+            "content": "import 'package:bloc/bloc.dart';\nimport 'package:ecommerce_c19/features/categories/domain/use_cases/get_categories_usecase.dart';\nimport 'package:ecommerce_c19/features/categories/presentation/bloc/categories_events.dart';\nimport 'package:ecommerce_c19/features/categories/presentation/bloc/categories_states.dart';\nimport 'package:injectable/injectable.dart';\n\n\n@injectable\nclass CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {\n  final GetCategoriesUseCase getCategoriesUseCase;\n\n  CategoriesBloc(this.getCategoriesUseCase) : super(const CategoriesState()) {\n    on<GetCategoriesEvent>((event, emit) async {\n      emit(state.copyWith(categoriesRequestStatus: RequestStatus.loading));\n\n      final result = await getCategoriesUseCase(\n        limit: event.limit,\n        page: event.page,\n        keyword: event.keyword,\n      );\n      result.fold(\n        (failure) => emit(\n          state.copyWith(\n            categoriesRequestStatus: RequestStatus.error,\n            errorMessage: failure.message,\n          ),\n        ),\n        (categories) => emit(\n          state.copyWith(\n            categoriesRequestStatus: RequestStatus.success,\n            categories: categories,\n          ),\n        ),\n      );\n    });\n  }\n}\n"
+        }
+    ]
+}

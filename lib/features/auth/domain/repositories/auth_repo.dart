@@ -14,4 +14,8 @@ abstract class AuthRepository {
     String email,
     String password,
   );
+
+  Future<bool> isLoggedIn();
+
+  Future<void> logout();
 }
