@@ -8,11 +8,13 @@ class ProfileField extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
+    required this.onEdit,
     this.obscure = false,
   });
 
   final String label;
   final String value;
+  final VoidCallback onEdit;
   final bool obscure;
 
   @override
@@ -31,6 +33,8 @@ class ProfileField extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         TextFormField(
+          // initialValue is read once; a new key rebuilds it after an edit.
+          key: ValueKey(value),
           initialValue: value,
           readOnly: true,
           obscureText: obscure,
@@ -49,7 +53,7 @@ class ProfileField extends StatelessWidget {
             enabledBorder: border,
             focusedBorder: border,
             suffixIcon: IconButton(
-              onPressed: () {},
+              onPressed: onEdit,
               icon: const Icon(
                 Icons.border_color_outlined,
                 size: 20,

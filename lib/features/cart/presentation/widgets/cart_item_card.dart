@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
-import 'package:ecommerce_c19/core/utils/dummy_data.dart';
 import 'package:ecommerce_c19/core/utils/price_formatter.dart';
 import 'package:ecommerce_c19/core/widgets/app_network_image.dart';
 import 'package:ecommerce_c19/core/widgets/quantity_stepper.dart';
+import 'package:ecommerce_c19/features/cart/domain/entities/cart_entity.dart';
 
 class CartItemCard extends StatelessWidget {
   const CartItemCard({
     super.key,
     required this.item,
-    required this.quantity,
     required this.onIncrement,
     required this.onDecrement,
     required this.onDelete,
   });
 
-  final DummyCartItem item;
-  final int quantity;
+  final CartItemEntity item;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onDelete;
@@ -43,7 +41,7 @@ class CartItemCard extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: AppNetworkImage(item.product.imageCover),
+              child: AppNetworkImage(item.imageCover),
             ),
           ),
           Expanded(
@@ -56,7 +54,7 @@ class CartItemCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          item.product.title,
+                          item.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: titleStyle,
@@ -71,23 +69,6 @@ class CartItemCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      CircleAvatar(radius: 8, backgroundColor: item.color),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${item.colorName} | Size: ${item.size}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.greyText,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const Spacer(),
                   Row(
                     children: [
@@ -96,13 +77,13 @@ class CartItemCard extends StatelessWidget {
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            formatPrice(item.product.price),
+                            formatPrice(item.price),
                             style: titleStyle,
                           ),
                         ),
                       ),
                       QuantityStepper(
-                        quantity: quantity,
+                        quantity: item.count,
                         onIncrement: onIncrement,
                         onDecrement: onDecrement,
                       ),

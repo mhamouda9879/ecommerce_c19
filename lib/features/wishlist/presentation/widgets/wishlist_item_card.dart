@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
-import 'package:ecommerce_c19/core/utils/dummy_data.dart';
 import 'package:ecommerce_c19/core/utils/price_formatter.dart';
 import 'package:ecommerce_c19/core/widgets/app_network_image.dart';
-import 'package:ecommerce_c19/core/widgets/favorite_button.dart';
+import 'package:ecommerce_c19/features/products/domain/entities/product_entity.dart';
+import 'package:ecommerce_c19/features/wishlist/presentation/widgets/wishlist_button.dart';
 
 class WishlistItemCard extends StatelessWidget {
-  const WishlistItemCard({super.key, required this.item, required this.onTap});
+  const WishlistItemCard({
+    super.key,
+    required this.product,
+    required this.onTap,
+    required this.onAddToCart,
+  });
 
-  final DummyWishlistItem item;
+  final ProductEntity product;
   final VoidCallback onTap;
+  final VoidCallback onAddToCart;
 
   @override
   Widget build(BuildContext context) {
     const titleStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.w500);
-    final product = item.product;
     final borderRadius = BorderRadius.circular(15);
 
     return Material(
@@ -59,21 +64,7 @@ class WishlistItemCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          FavoriteButton(isFavorite: true, onTap: () {}),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 7, backgroundColor: item.color),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              '${item.colorName} color',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
+                          WishlistButton(product: product),
                         ],
                       ),
                       const Spacer(),
@@ -86,14 +77,14 @@ class WishlistItemCard extends StatelessWidget {
                               child: Row(
                                 children: [
                                   Text(
-                                    formatPrice(product.price),
+                                    formatPrice(product.finalPrice),
                                     style: titleStyle,
                                   ),
-                                  if (product.oldPrice case final oldPrice?)
+                                  if (product.priceAfterDiscount != null)
                                     Padding(
                                       padding: const EdgeInsets.only(left: 8),
                                       child: Text(
-                                        formatPrice(oldPrice),
+                                        formatPrice(product.price),
                                         style: const TextStyle(
                                           fontSize: 11,
                                           color: AppColors.oldPrice,
@@ -109,7 +100,7 @@ class WishlistItemCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: onAddToCart,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: AppColors.white,

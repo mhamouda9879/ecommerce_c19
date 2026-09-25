@@ -19,6 +19,7 @@ import 'core/di/network_module.dart' as _i177;
 import 'core/di/storage_module.dart' as _i540;
 import 'core/network/dio_helper.dart' as _i534;
 import 'core/storage/token_storage.dart' as _i23;
+import 'core/storage/user_storage.dart' as _i663;
 import 'features/auth/data/data_sources/remote/auth_remote_ds.dart' as _i981;
 import 'features/auth/data/data_sources/remote/auth_remote_ds_impl.dart'
     as _i393;
@@ -34,6 +35,12 @@ import 'features/cart/data/data_sources/remote/cart_ds_impl.dart' as _i149;
 import 'features/cart/data/repositories/cart_repo_impl.dart' as _i305;
 import 'features/cart/domain/repositories/cart_repository.dart' as _i303;
 import 'features/cart/domain/use_cases/add_product_to_cart.dart' as _i148;
+import 'features/cart/domain/use_cases/clear_cart_usecase.dart' as _i169;
+import 'features/cart/domain/use_cases/get_cart_usecase.dart' as _i883;
+import 'features/cart/domain/use_cases/remove_cart_item_usecase.dart' as _i585;
+import 'features/cart/domain/use_cases/update_cart_item_count_usecase.dart'
+    as _i598;
+import 'features/cart/presentation/bloc/cart_bloc.dart' as _i239;
 import 'features/categories/data/data_sources/remote/categories_remote_ds.dart'
     as _i82;
 import 'features/categories/data/data_sources/remote/categories_remote_ds_impl.dart'
@@ -56,6 +63,29 @@ import 'features/products/domain/use_cases/get_product_details_usecase.dart'
     as _i248;
 import 'features/products/domain/use_cases/get_products_usecase.dart' as _i961;
 import 'features/products/presentation/bloc/products_bloc.dart' as _i220;
+import 'features/profile/data/data_sources/remote/profile_remote_ds.dart'
+    as _i323;
+import 'features/profile/data/data_sources/remote/profile_remote_ds_impl.dart'
+    as _i493;
+import 'features/profile/data/repositories/profile_repo_impl.dart' as _i1029;
+import 'features/profile/domain/repositories/profile_repo.dart' as _i136;
+import 'features/profile/domain/use_cases/change_password_usecase.dart'
+    as _i774;
+import 'features/profile/domain/use_cases/get_profile_usecase.dart' as _i891;
+import 'features/profile/domain/use_cases/update_profile_usecase.dart' as _i333;
+import 'features/profile/presentation/bloc/profile_bloc.dart' as _i284;
+import 'features/wishlist/data/data_sources/remote/wishlist_remote_ds.dart'
+    as _i570;
+import 'features/wishlist/data/data_sources/remote/wishlist_remote_ds_impl.dart'
+    as _i276;
+import 'features/wishlist/data/repositories/wishlist_repo_impl.dart' as _i714;
+import 'features/wishlist/domain/repositories/wishlist_repo.dart' as _i822;
+import 'features/wishlist/domain/use_cases/add_to_wishlist_usecase.dart'
+    as _i998;
+import 'features/wishlist/domain/use_cases/get_wishlist_usecase.dart' as _i39;
+import 'features/wishlist/domain/use_cases/remove_from_wishlist_usecase.dart'
+    as _i486;
+import 'features/wishlist/presentation/bloc/wishlist_bloc.dart' as _i445;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -73,12 +103,24 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i23.TokenStorage>(
       () => _i23.TokenStorage(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.lazySingleton<_i663.UserStorage>(
+      () => _i663.UserStorage(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i534.DioHelper>(() => _i534.DioHelper(gh<_i361.Dio>()));
     gh.factory<_i652.ProductsRemoteDataSource>(
       () => _i558.ProductsRemoteDsImpl(dioHelper: gh<_i534.DioHelper>()),
     );
-    gh.factory<_i585.CartDataSource>(
-      () => _i149.CartDataSourceImpl(dioHelper: gh<_i534.DioHelper>()),
+    gh.factory<_i323.ProfileRemoteDataSource>(
+      () => _i493.ProfileRemoteDsImpl(
+        dioHelper: gh<_i534.DioHelper>(),
+        tokenStorage: gh<_i23.TokenStorage>(),
+      ),
+    );
+    gh.factory<_i570.WishlistRemoteDataSource>(
+      () => _i276.WishlistRemoteDsImpl(
+        dioHelper: gh<_i534.DioHelper>(),
+        tokenStorage: gh<_i23.TokenStorage>(),
+      ),
     );
     gh.factory<_i981.AuthRemoteDataSource>(
       () => _i393.AuthRemoteDsImpl(dioHelper: gh<_i534.DioHelper>()),
@@ -88,8 +130,19 @@ extension GetItInjectableX on _i174.GetIt {
         productsRemoteDataSource: gh<_i652.ProductsRemoteDataSource>(),
       ),
     );
+    gh.factory<_i822.WishlistRepository>(
+      () => _i714.WishlistRepositoryImpl(
+        wishlistRemoteDataSource: gh<_i570.WishlistRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i82.CategoriesRemoteDataSource>(
       () => _i169.CategoriesRemoteDsImpl(dioHelper: gh<_i534.DioHelper>()),
+    );
+    gh.factory<_i585.CartDataSource>(
+      () => _i149.CartDataSourceImpl(
+        dioHelper: gh<_i534.DioHelper>(),
+        tokenStorage: gh<_i23.TokenStorage>(),
+      ),
     );
     gh.factory<_i248.GetProductDetailsUseCase>(
       () => _i248.GetProductDetailsUseCase(
@@ -110,15 +163,85 @@ extension GetItInjectableX on _i174.GetIt {
         cartRepository: gh<_i303.CartRepository>(),
       ),
     );
+    gh.factory<_i169.ClearCartUseCase>(
+      () => _i169.ClearCartUseCase(cartRepository: gh<_i303.CartRepository>()),
+    );
+    gh.factory<_i883.GetCartUseCase>(
+      () => _i883.GetCartUseCase(cartRepository: gh<_i303.CartRepository>()),
+    );
+    gh.factory<_i585.RemoveCartItemUseCase>(
+      () => _i585.RemoveCartItemUseCase(
+        cartRepository: gh<_i303.CartRepository>(),
+      ),
+    );
+    gh.factory<_i598.UpdateCartItemCountUseCase>(
+      () => _i598.UpdateCartItemCountUseCase(
+        cartRepository: gh<_i303.CartRepository>(),
+      ),
+    );
+    gh.factory<_i239.CartBloc>(
+      () => _i239.CartBloc(
+        addProductToCartUsecase: gh<_i148.AddProductToCartUsecase>(),
+        getCartUseCase: gh<_i883.GetCartUseCase>(),
+        updateCartItemCountUseCase: gh<_i598.UpdateCartItemCountUseCase>(),
+        removeCartItemUseCase: gh<_i585.RemoveCartItemUseCase>(),
+        clearCartUseCase: gh<_i169.ClearCartUseCase>(),
+      ),
+    );
+    gh.factory<_i998.AddToWishlistUseCase>(
+      () => _i998.AddToWishlistUseCase(
+        wishlistRepository: gh<_i822.WishlistRepository>(),
+      ),
+    );
+    gh.factory<_i39.GetWishlistUseCase>(
+      () => _i39.GetWishlistUseCase(
+        wishlistRepository: gh<_i822.WishlistRepository>(),
+      ),
+    );
+    gh.factory<_i486.RemoveFromWishlistUseCase>(
+      () => _i486.RemoveFromWishlistUseCase(
+        wishlistRepository: gh<_i822.WishlistRepository>(),
+      ),
+    );
     gh.factory<_i238.CategoriesRepository>(
       () => _i104.CategoriesRepositoryImpl(
         categoriesRemoteDataSource: gh<_i82.CategoriesRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i136.ProfileRepository>(
+      () => _i1029.ProfileRepositoryImpl(
+        profileRemoteDataSource: gh<_i323.ProfileRemoteDataSource>(),
+        userStorage: gh<_i663.UserStorage>(),
+        tokenStorage: gh<_i23.TokenStorage>(),
+      ),
+    );
+    gh.factory<_i774.ChangePasswordUseCase>(
+      () => _i774.ChangePasswordUseCase(
+        profileRepository: gh<_i136.ProfileRepository>(),
+      ),
+    );
+    gh.factory<_i891.GetProfileUseCase>(
+      () => _i891.GetProfileUseCase(
+        profileRepository: gh<_i136.ProfileRepository>(),
+      ),
+    );
+    gh.factory<_i333.UpdateProfileUseCase>(
+      () => _i333.UpdateProfileUseCase(
+        profileRepository: gh<_i136.ProfileRepository>(),
       ),
     );
     gh.factory<_i416.AuthRepository>(
       () => _i426.AuthRepositoryImpl(
         authRemoteDataSource: gh<_i981.AuthRemoteDataSource>(),
         tokenStorage: gh<_i23.TokenStorage>(),
+        userStorage: gh<_i663.UserStorage>(),
+      ),
+    );
+    gh.factory<_i284.ProfileBloc>(
+      () => _i284.ProfileBloc(
+        gh<_i891.GetProfileUseCase>(),
+        gh<_i333.UpdateProfileUseCase>(),
+        gh<_i774.ChangePasswordUseCase>(),
       ),
     );
     gh.factory<_i220.ProductsBloc>(
@@ -126,6 +249,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i961.GetProductsUseCase>(),
         gh<_i248.GetProductDetailsUseCase>(),
         gh<_i148.AddProductToCartUsecase>(),
+        gh<_i598.UpdateCartItemCountUseCase>(),
       ),
     );
     gh.factory<_i90.IsLoggedInUseCase>(
@@ -139,6 +263,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i392.SignInUseCase>(
       () => _i392.SignInUseCase(authRepository: gh<_i416.AuthRepository>()),
+    );
+    gh.factory<_i445.WishlistBloc>(
+      () => _i445.WishlistBloc(
+        gh<_i39.GetWishlistUseCase>(),
+        gh<_i998.AddToWishlistUseCase>(),
+        gh<_i486.RemoveFromWishlistUseCase>(),
+      ),
     );
     gh.factory<_i37.GetCategoriesUseCase>(
       () => _i37.GetCategoriesUseCase(

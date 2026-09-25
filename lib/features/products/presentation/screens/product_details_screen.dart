@@ -16,6 +16,7 @@ import 'package:ecommerce_c19/features/products/presentation/widgets/color_selec
 import 'package:ecommerce_c19/features/products/presentation/widgets/product_description.dart';
 import 'package:ecommerce_c19/features/products/presentation/widgets/product_image_slider.dart';
 import 'package:ecommerce_c19/features/products/presentation/widgets/size_selector.dart';
+import 'package:ecommerce_c19/features/wishlist/presentation/widgets/wishlist_button.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -49,7 +50,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return BlocProvider(
       create: (_) =>
           getIt<ProductsBloc>()..add(GetProductDetailsEvent(productId)),
-      child: BlocBuilder<ProductsBloc, ProductsState>(
+      child: BlocConsumer<ProductsBloc, ProductsState>(
+        listenWhen: (previous, current) =>
+            previous.addProductToCartRequestStatus !=
+                current.addProductToCartRequestStatus &&
+            current.addProductToCartRequestStatus != RequestStatus.loading,
+        listener: (context, state) =>
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.addProductToCartRequestStatus == RequestStatus.success
+                      ? 'Added to cart'
+                      : state.errorMessage ?? 'Could not add to cart',
+                ),
+              ),
+            ),
         builder: (context, state) {
           final product = state.productDetails;
           return Scaffold(
@@ -75,7 +90,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     total: product.finalPrice * _quantity,
                     buttonText: 'Add to cart',
                     leadingIcon: Icons.add_shopping_cart,
-                    onPressed: () {},
+                    onPressed: () {
+                      if (state.addProductToCartRequestStatus ==
+                          RequestStatus.loading) {
+                        return;
+                      }
+                      context.read<ProductsBloc>().add(
+                        AddToCartEvent(product.id, quantity: _quantity),
+                      );
+                    },
                   ),
           );
         },
@@ -91,6 +114,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           images: product.images.isEmpty
               ? [product.imageCover]
               : product.images,
+          favoriteButton: WishlistButton(product: product),
         ),
         const SizedBox(height: 24),
         Row(

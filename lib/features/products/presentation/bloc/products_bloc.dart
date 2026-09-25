@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:ecommerce_c19/features/cart/domain/use_cases/add_product_to_cart.dart';
+import 'package:ecommerce_c19/features/cart/domain/use_cases/update_cart_item_count_usecase.dart';
 import 'package:ecommerce_c19/features/products/domain/use_cases/get_product_details_usecase.dart';
 import 'package:ecommerce_c19/features/products/domain/use_cases/get_products_usecase.dart';
 import 'package:ecommerce_c19/features/products/presentation/bloc/products_events.dart';
@@ -11,18 +12,28 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final GetProductsUseCase getProductsUseCase;
   final GetProductDetailsUseCase getProductDetailsUseCase;
   final AddProductToCartUsecase addProductToCartUseCase;
+  final UpdateCartItemCountUseCase updateCartItemCountUseCase;
 
   ProductsBloc(
     this.getProductsUseCase,
     this.getProductDetailsUseCase,
     this.addProductToCartUseCase,
+    this.updateCartItemCountUseCase,
   ) : super(const ProductsState()) {
     on<AddToCartEvent>((event, emit) async {
       emit(
         state.copyWith(addProductToCartRequestStatus: RequestStatus.loading),
       );
 
-      final result = await addProductToCartUseCase(event.productId);
+      var result = await addProductToCartUseCase(event.productId);
+      // The add endpoint always adds one; set the chosen quantity after it.
+      if (result.isRight() && event.quantity > 1) {
+        final updated = await updateCartItemCountUseCase(
+          event.productId,
+          event.quantity,
+        );
+        result = updated.map((_) => true);
+      }
       result.fold(
         (failure) => emit(
           state.copyWith(

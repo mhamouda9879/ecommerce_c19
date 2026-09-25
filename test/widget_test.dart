@@ -3,6 +3,8 @@ import 'package:ecommerce_c19/core/errors/failures.dart';
 import 'package:ecommerce_c19/di.dart';
 import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';
 import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';
+import 'package:ecommerce_c19/features/cart/domain/entities/cart_entity.dart';
+import 'package:ecommerce_c19/features/cart/domain/repositories/cart_repository.dart';
 import 'package:ecommerce_c19/features/categories/domain/entities/category_entity.dart';
 import 'package:ecommerce_c19/features/categories/domain/entities/sub_category_entity.dart';
 import 'package:ecommerce_c19/features/categories/domain/repositories/categories_repo.dart';
@@ -10,6 +12,9 @@ import 'package:ecommerce_c19/features/products/domain/entities/product_entity.d
 import 'package:ecommerce_c19/features/products/domain/entities/products_query.dart';
 import 'package:ecommerce_c19/features/products/domain/repositories/products_repo.dart';
 import 'package:ecommerce_c19/features/products/presentation/widgets/product_card.dart';
+import 'package:ecommerce_c19/features/profile/domain/entities/user_entity.dart';
+import 'package:ecommerce_c19/features/profile/domain/repositories/profile_repo.dart';
+import 'package:ecommerce_c19/features/wishlist/domain/repositories/wishlist_repo.dart';
 import 'package:ecommerce_c19/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -112,8 +117,111 @@ class _FakeProductsRepository implements ProductsRepository {
       : const Left(ServerFailure('No document for this id', statusCode: 404));
 }
 
+// Its id is unknown to the products repository, so details fail to load.
+const _removedProduct = ProductEntity(
+  id: 'gone',
+  title: 'Removed Hoodie',
+  description: '',
+  imageCover: 'hoodie.png',
+  images: [],
+  price: 500,
+  ratingsAverage: 0,
+  ratingsQuantity: 0,
+  sold: 0,
+);
+
+class _FakeWishlistRepository implements WishlistRepository {
+  final ids = <String>{_removedProduct.id};
+
+  @override
+  Future<Either<Failure, List<ProductEntity>>> getWishlist() async =>
+      const Right([_removedProduct]);
+
+  @override
+  Future<Either<Failure, List<String>>> addToWishlist(String productId) async =>
+      Right([...ids..add(productId)]);
+
+  @override
+  Future<Either<Failure, List<String>>> removeFromWishlist(
+    String productId,
+  ) async => Right([...ids..remove(productId)]);
+}
+
+class _FakeCartRepository implements CartRepository {
+  int count = 1;
+
+  CartEntity get _cart => CartEntity(
+    totalPrice: _tShirt.finalPrice * count,
+    items: [
+      CartItemEntity(
+        productId: _tShirt.id,
+        title: _tShirt.title,
+        imageCover: _tShirt.imageCover,
+        price: _tShirt.finalPrice,
+        count: count,
+      ),
+    ],
+  );
+
+  @override
+  Future<Either<Failure, bool>> addToCart(String product) async =>
+      const Right(true);
+
+  @override
+  Future<Either<Failure, CartEntity>> getCart() async => Right(_cart);
+
+  @override
+  Future<Either<Failure, CartEntity>> updateItemCount(
+    String productId,
+    int count,
+  ) async {
+    this.count = count;
+    return Right(_cart);
+  }
+
+  @override
+  Future<Either<Failure, CartEntity>> removeItem(String productId) async =>
+      const Right(CartEntity(totalPrice: 0, items: []));
+
+  @override
+  Future<Either<Failure, Unit>> clearCart() async => const Right(unit);
+}
+
+class _FakeProfileRepository implements ProfileRepository {
+  UserEntity user = const UserEntity(
+    name: 'Ahmed Ali',
+    email: 'ahmed@mail.com',
+    phone: '01010700700',
+  );
+
+  @override
+  Future<UserEntity> getProfile() async => user;
+
+  @override
+  Future<Either<Failure, UserEntity>> updateProfile({
+    String? name,
+    String? email,
+    String? phone,
+  }) async {
+    user = UserEntity(
+      name: name ?? user.name,
+      email: email ?? user.email,
+      phone: phone ?? user.phone,
+    );
+    return Right(user);
+  }
+
+  @override
+  Future<Either<Failure, Unit>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async => const Right(unit);
+}
+
 void main() {
   late _FakeAuthRepository fakeAuthRepository;
+  late _FakeCartRepository fakeCartRepository;
+  late _FakeWishlistRepository fakeWishlistRepository;
   late _FakeProductsRepository fakeProductsRepository;
   late _FakeCategoriesRepository fakeCategoriesRepository;
 
@@ -129,6 +237,12 @@ void main() {
     getIt.registerFactory<ProductsRepository>(() => fakeProductsRepository);
     fakeCategoriesRepository = _FakeCategoriesRepository();
     getIt.registerFactory<CategoriesRepository>(() => fakeCategoriesRepository);
+    fakeCartRepository = _FakeCartRepository();
+    getIt.registerFactory<CartRepository>(() => fakeCartRepository);
+    fakeWishlistRepository = _FakeWishlistRepository();
+    getIt.registerFactory<WishlistRepository>(() => fakeWishlistRepository);
+    final fakeProfileRepository = _FakeProfileRepository();
+    getIt.registerFactory<ProfileRepository>(() => fakeProfileRepository);
   });
 
   // Match the design's phone frame (430 x 932).
@@ -203,6 +317,13 @@ void main() {
       expect(find.text('Product Details'), findsOneWidget);
       expect(find.text('Logo T-Shirt Green'), findsOneWidget);
       expect(find.text('EGP 379'), findsWidgets);
+
+      await tester.tap(find.byIcon(Icons.add_circle_outline));
+      await tester.pump();
+      await tester.tap(find.text('Add to cart'));
+      await tester.pumpAndSettle();
+      expect(find.text('Added to cart'), findsOneWidget);
+      expect(fakeCartRepository.count, 2);
 
       await tester.tap(find.byIcon(Icons.shopping_cart_outlined));
       await tester.pumpAndSettle();
@@ -339,7 +460,6 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
 
-    // Wishlist placeholders use real API ids the fake repository doesn't know.
     await tester.tap(
       find.ancestor(
         of: find.byWidgetPredicate(
@@ -349,11 +469,60 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Logo T-Shirt Green'));
+    await tester.tap(find.text('Removed Hoodie'));
     await tester.pumpAndSettle();
 
     expect(find.text('No document for this id'), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
     expect(find.text('Add to cart'), findsNothing);
+  });
+
+  Future<void> openTab(WidgetTester tester, String label) async {
+    await tester.tap(
+      find.ancestor(
+        of: find.byWidgetPredicate(
+          (w) => w is Image && w.semanticLabel == label,
+        ),
+        matching: find.byType(InkResponse),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('cart loads from the API and the stepper updates the count', (
+    tester,
+  ) async {
+    fakeAuthRepository.loggedIn = true;
+    await tester.pumpWidget(const MyApp());
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.shopping_cart_outlined));
+    await tester.pumpAndSettle();
+    expect(find.text('Logo T-Shirt Green'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.add_circle_outline));
+    await tester.pumpAndSettle();
+
+    expect(fakeCartRepository.count, 2);
+    expect(find.text('2'), findsOneWidget);
+  });
+
+  testWidgets('tapping the heart removes a product from the wishlist', (
+    tester,
+  ) async {
+    fakeAuthRepository.loggedIn = true;
+    await tester.pumpWidget(const MyApp());
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    await openTab(tester, 'Wishlist');
+    expect(find.text('Removed Hoodie'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.favorite));
+    await tester.pumpAndSettle();
+
+    expect(fakeWishlistRepository.ids, isEmpty);
+    expect(find.text('Your wishlist is empty'), findsOneWidget);
   });
 }

@@ -12,4 +12,9 @@ abstract class ApiConstants {
   // Products
   static const products = '/api/v1/products';
   static const cart = '/api/v1/cart';
+  static const wishlist = '/api/v1/wishlist';
+
+  // Profile
+  static const updateMe = '/api/v1/users/updateMe';
+  static const changeMyPassword = '/api/v1/users/changeMyPassword';
 }

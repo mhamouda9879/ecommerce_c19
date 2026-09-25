@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
 import 'package:ecommerce_c19/core/utils/price_formatter.dart';
 import 'package:ecommerce_c19/core/widgets/app_network_image.dart';
-import 'package:ecommerce_c19/core/widgets/favorite_button.dart';
 import 'package:ecommerce_c19/features/products/domain/entities/product_entity.dart';
+import 'package:ecommerce_c19/features/wishlist/presentation/widgets/wishlist_button.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, required this.onTap});
@@ -39,7 +39,7 @@ class ProductCard extends StatelessWidget {
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: FavoriteButton(isFavorite: false, onTap: () {}),
+                    child: WishlistButton(product: product),
                   ),
                 ],
               ),

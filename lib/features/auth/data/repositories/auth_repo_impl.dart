@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ecommerce_c19/core/errors/error_handler.dart';
 import 'package:ecommerce_c19/core/errors/failures.dart';
 import 'package:ecommerce_c19/core/storage/token_storage.dart';
+import 'package:ecommerce_c19/core/storage/user_storage.dart';
 import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';
 import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';
 import 'package:ecommerce_c19/features/auth/domain/repositories/auth_repo.dart';
@@ -11,9 +12,11 @@ import 'package:injectable/injectable.dart';
 class AuthRepositoryImpl implements AuthRepository {
   AuthRemoteDataSource authRemoteDataSource;
   TokenStorage tokenStorage;
+  UserStorage userStorage;
   AuthRepositoryImpl({
     required this.authRemoteDataSource,
     required this.tokenStorage,
+    required this.userStorage,
   });
 
   @override
@@ -22,14 +25,16 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
     String name,
     String phone,
-  ) => safeApiCall(
-    () => authRemoteDataSource.signUpWithEmailAndPassword(
+  ) => safeApiCall(() async {
+    final response = await authRemoteDataSource.signUpWithEmailAndPassword(
       email,
       password,
       name,
       phone,
-    ),
-  );
+    );
+    await userStorage.saveUser(name: name, email: email, phone: phone);
+    return response;
+  });
 
   @override
   Future<Either<Failure, AuthResponse>> signInWithEmailAndPassword(
@@ -42,6 +47,15 @@ class AuthRepositoryImpl implements AuthRepository {
     );
     final token = response.token;
     if (token != null) await tokenStorage.saveToken(token);
+    // Keep the phone saved at sign-up only if it's the same account.
+    final storedUser = await userStorage.getUser();
+    if (storedUser.email != response.user?.email) {
+      await userStorage.deleteUser();
+    }
+    await userStorage.saveUser(
+      name: response.user?.name,
+      email: response.user?.email,
+    );
     return response;
   });
 
@@ -56,5 +70,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() => tokenStorage.deleteToken();
+  Future<void> logout() async {
+    await tokenStorage.deleteToken();
+    await userStorage.deleteUser();
+  }
 }

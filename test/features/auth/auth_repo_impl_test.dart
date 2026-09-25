@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:ecommerce_c19/core/storage/token_storage.dart';
+import 'package:ecommerce_c19/core/storage/user_storage.dart';
 import 'package:ecommerce_c19/features/auth/data/data_sources/remote/auth_remote_ds.dart';
 import 'package:ecommerce_c19/features/auth/data/models/auth_response.dart';
 import 'package:ecommerce_c19/features/auth/data/repositories/auth_repo_impl.dart';
@@ -15,7 +16,11 @@ class _FakeRemote implements AuthRemoteDataSource {
     String password,
   ) async {
     if (signInError case final error?) throw error;
-    return AuthResponse(message: 'success', token: 'jwt-123');
+    return AuthResponse(
+      message: 'success',
+      token: 'jwt-123',
+      user: User(name: 'Ahmed', email: email),
+    );
   }
 
   @override
@@ -30,15 +35,18 @@ class _FakeRemote implements AuthRemoteDataSource {
 void main() {
   late _FakeRemote remote;
   late TokenStorage tokenStorage;
+  late UserStorage userStorage;
   late AuthRepositoryImpl repository;
 
   setUp(() {
     FlutterSecureStorage.setMockInitialValues({});
     remote = _FakeRemote();
     tokenStorage = TokenStorage(const FlutterSecureStorage());
+    userStorage = UserStorage(const FlutterSecureStorage());
     repository = AuthRepositoryImpl(
       authRemoteDataSource: remote,
       tokenStorage: tokenStorage,
+      userStorage: userStorage,
     );
   });
 
@@ -77,5 +85,28 @@ void main() {
 
     expect(await tokenStorage.getToken(), isNull);
     expect(await repository.isLoggedIn(), isFalse);
+    expect(await userStorage.getUser(), (name: null, email: null, phone: null));
+  });
+
+  test('sign in saves the user and keeps the sign-up phone', () async {
+    await repository.signUpWithEmailAndPassword('a@b.com', 'x', 'A', '010');
+    await repository.signInWithEmailAndPassword('a@b.com', 'x');
+
+    expect(await userStorage.getUser(), (
+      name: 'Ahmed',
+      email: 'a@b.com',
+      phone: '010',
+    ));
+  });
+
+  test('signing in to another account drops the old phone', () async {
+    await repository.signUpWithEmailAndPassword('a@b.com', 'x', 'A', '010');
+    await repository.signInWithEmailAndPassword('other@b.com', 'x');
+
+    expect(await userStorage.getUser(), (
+      name: 'Ahmed',
+      email: 'other@b.com',
+      phone: null,
+    ));
   });
 }

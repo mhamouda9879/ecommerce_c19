@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
 import 'package:ecommerce_c19/core/widgets/app_network_image.dart';
-import 'package:ecommerce_c19/core/widgets/favorite_button.dart';
 
 /// Swipeable product images with a favorite button and page indicator.
 class ProductImageSlider extends StatefulWidget {
-  const ProductImageSlider({super.key, required this.images});
+  const ProductImageSlider({
+    super.key,
+    required this.images,
+    required this.favoriteButton,
+  });
 
   final List<String> images;
+  final Widget favoriteButton;
 
   @override
   State<ProductImageSlider> createState() => _ProductImageSliderState();
@@ -36,11 +40,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
               itemBuilder: (context, index) =>
                   AppNetworkImage(widget.images[index]),
             ),
-            Positioned(
-              top: 14,
-              right: 14,
-              child: FavoriteButton(isFavorite: false, onTap: () {}),
-            ),
+            Positioned(top: 14, right: 14, child: widget.favoriteButton),
             Positioned(
               left: 0,
               right: 0,
