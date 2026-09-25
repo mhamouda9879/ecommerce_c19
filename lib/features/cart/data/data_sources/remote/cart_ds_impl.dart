@@ -17,10 +17,10 @@ class CartDataSourceImpl implements CartDataSource {
     print('Adding product to cart: $productId');
     Response res = await dioHelper.post(
       ApiConstants.cart,
-      data: {'product_id': productId},
+      data: {'productId': productId},
       token: await getIt<TokenStorage>().getToken(),
     );
 
-    return Future.value(res.data['success'] == true ? true : false);
+    return res.data['status'] == 'success';
   }
 }
