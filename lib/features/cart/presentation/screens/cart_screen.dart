@@ -14,7 +14,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // Local UI state until the cart view model exists.
   final _items = [...DummyData.cart];
   late final _quantities = [for (final item in _items) item.quantity];
 

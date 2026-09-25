@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/features/cart/data/repositories/cart_repo_impl.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1790327710936,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1790327710936,
+            "name": "Commit-0",
+            "content": "import 'package:dartz/dartz.dart';\nimport 'package:ecommerce_c19/core/errors/failures.dart';\nimport 'package:ecommerce_c19/features/cart/data/data_sources/remote/cart_ds.dart';\nimport 'package:ecommerce_c19/features/cart/domain/repositories/cart_repository.dart';\nimport 'package:injectable/injectable.dart';\n\n@Injectable(as: CartRepository)\nclass CartRepositoryImpl implements CartRepository {\n  CartDataSource cartDataSource;\n\n  CartRepositoryImpl({required this.cartDataSource});\n  @override\n  Future<Either<Failure, bool>> addToCart(String productId) async {\n    try {\n      final result = await cartDataSource.addToCart(productId);\n      return Right(result);\n    } catch (e) {\n      return Left(\n        ServerFailure(\"Error adding product to cart: ${e.toString()}\"),\n      );\n    }\n  }\n}\n"
+        }
+    ]
+}

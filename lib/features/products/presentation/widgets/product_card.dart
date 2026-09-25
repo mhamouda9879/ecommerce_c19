@@ -1,3 +1,6 @@
+import 'package:ecommerce_c19/di.dart';
+import 'package:ecommerce_c19/features/products/presentation/bloc/products_bloc.dart';
+import 'package:ecommerce_c19/features/products/presentation/bloc/products_events.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ecommerce_c19/core/theme/app_colors.dart';
@@ -102,7 +105,7 @@ class ProductCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const _AddButton(),
+                      _AddButton(product.id),
                     ],
                   ),
                 ],
@@ -116,15 +119,19 @@ class ProductCard extends StatelessWidget {
 }
 
 class _AddButton extends StatelessWidget {
-  const _AddButton();
+  String productId;
+  _AddButton(this.productId);
 
   @override
   Widget build(BuildContext context) {
+    print('productId: $productId');
     return Material(
       color: AppColors.primary,
       shape: const CircleBorder(),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          getIt<ProductsBloc>().add(AddToCartEvent(productId));
+        },
         customBorder: const CircleBorder(),
         child: const SizedBox.square(
           dimension: 30,

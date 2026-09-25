@@ -29,6 +29,11 @@ import 'features/auth/domain/use_cases/logout_usecase.dart' as _i53;
 import 'features/auth/domain/use_cases/sign_in_usecase.dart' as _i392;
 import 'features/auth/domain/use_cases/signUp_usecase.dart' as _i286;
 import 'features/auth/presentation/bloc/auth_bloc.dart' as _i363;
+import 'features/cart/data/data_sources/remote/cart_ds.dart' as _i585;
+import 'features/cart/data/data_sources/remote/cart_ds_impl.dart' as _i149;
+import 'features/cart/data/repositories/cart_repo_impl.dart' as _i305;
+import 'features/cart/domain/repositories/cart_repository.dart' as _i303;
+import 'features/cart/domain/use_cases/add_product_to_cart.dart' as _i148;
 import 'features/categories/data/data_sources/remote/categories_remote_ds.dart'
     as _i82;
 import 'features/categories/data/data_sources/remote/categories_remote_ds_impl.dart'
@@ -72,6 +77,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i652.ProductsRemoteDataSource>(
       () => _i558.ProductsRemoteDsImpl(dioHelper: gh<_i534.DioHelper>()),
     );
+    gh.factory<_i585.CartDataSource>(
+      () => _i149.CartDataSourceImpl(dioHelper: gh<_i534.DioHelper>()),
+    );
     gh.factory<_i981.AuthRemoteDataSource>(
       () => _i393.AuthRemoteDsImpl(dioHelper: gh<_i534.DioHelper>()),
     );
@@ -93,6 +101,15 @@ extension GetItInjectableX on _i174.GetIt {
         productsRepository: gh<_i485.ProductsRepository>(),
       ),
     );
+    gh.factory<_i303.CartRepository>(
+      () =>
+          _i305.CartRepositoryImpl(cartDataSource: gh<_i585.CartDataSource>()),
+    );
+    gh.factory<_i148.AddProductToCartUsecase>(
+      () => _i148.AddProductToCartUsecase(
+        cartRepository: gh<_i303.CartRepository>(),
+      ),
+    );
     gh.factory<_i238.CategoriesRepository>(
       () => _i104.CategoriesRepositoryImpl(
         categoriesRemoteDataSource: gh<_i82.CategoriesRemoteDataSource>(),
@@ -108,6 +125,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i220.ProductsBloc(
         gh<_i961.GetProductsUseCase>(),
         gh<_i248.GetProductDetailsUseCase>(),
+        gh<_i148.AddProductToCartUsecase>(),
       ),
     );
     gh.factory<_i90.IsLoggedInUseCase>(

@@ -3,13 +3,6 @@ import 'package:dio/dio.dart';
 
 import 'package:ecommerce_c19/core/errors/failures.dart';
 
-/// Runs an API call and returns its result, or the [Failure] it threw.
-///
-/// Wrap every repository method in this so all APIs report errors the same
-/// way:
-/// ```dart
-/// return safeApiCall(() => remoteDataSource.signIn(email, password));
-/// ```
 Future<Either<Failure, T>> safeApiCall<T>(Future<T> Function() call) async {
   try {
     return Right(await call());

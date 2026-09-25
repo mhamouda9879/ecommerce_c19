@@ -7,14 +7,18 @@ class ProductsState {
   final List<ProductEntity> products;
   final ProductEntity? productDetails;
   final String? errorMessage;
+  final bool isAddedToCart;
   final RequestStatus productsRequestStatus;
+  final RequestStatus addProductToCartRequestStatus;
   final RequestStatus productDetailsRequestStatus;
 
   const ProductsState({
     this.products = const [],
     this.productDetails,
     this.errorMessage,
+    this.isAddedToCart = false,
     this.productsRequestStatus = RequestStatus.init,
+    this.addProductToCartRequestStatus = RequestStatus.init,
     this.productDetailsRequestStatus = RequestStatus.init,
   });
 
@@ -22,11 +26,16 @@ class ProductsState {
     List<ProductEntity>? products,
     ProductEntity? productDetails,
     String? errorMessage,
+    bool? isAddedToCart,
     RequestStatus? productsRequestStatus,
+    RequestStatus? addProductToCartRequestStatus,
     RequestStatus? productDetailsRequestStatus,
   }) {
     return ProductsState(
       products: products ?? this.products,
+      isAddedToCart: isAddedToCart ?? this.isAddedToCart,
+      addProductToCartRequestStatus:
+          addProductToCartRequestStatus ?? this.addProductToCartRequestStatus,
       productDetails: productDetails ?? this.productDetails,
       errorMessage: errorMessage ?? this.errorMessage,
       productsRequestStatus:

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/features/cart/data/data_sources/remote/cart_ds_impl.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1790327676170,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1790327701432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,13 +12,13 @@\n \n   CartDataSourceImpl({required this.dioHelper});\n \n   @override\n-  Future<bool> addToCart(String product) async {\n-    print('Adding product to cart: $product');\n+  Future<bool> addToCart(String productId) async {\n+    print('Adding product to cart: $productId');\n     Response res = await dioHelper.post(\n       ApiConstants.cart,\n-      data: {'product_id': product},\n+      data: {'product_id': productId},\n       token: await getIt<TokenStorage>().getToken(),\n     );\n \n     return Future.value(res.data['success'] == true ? true : false);\n"
+                }
+            ],
+            "date": 1790327676170,
+            "name": "Commit-0",
+            "content": "import 'package:dio/dio.dart';\nimport 'package:ecommerce_c19/core/network/api_constants.dart';\nimport 'package:ecommerce_c19/core/network/dio_helper.dart';\nimport 'package:ecommerce_c19/core/storage/token_storage.dart';\nimport 'package:ecommerce_c19/di.dart';\nimport 'package:ecommerce_c19/features/cart/data/data_sources/remote/cart_ds.dart';\nimport 'package:injectable/injectable.dart';\n\n@Injectable(as: CartDataSource)\nclass CartDataSourceImpl implements CartDataSource {\n  DioHelper dioHelper;\n\n  CartDataSourceImpl({required this.dioHelper});\n\n  @override\n  Future<bool> addToCart(String product) async {\n    print('Adding product to cart: $product');\n    Response res = await dioHelper.post(\n      ApiConstants.cart,\n      data: {'product_id': product},\n      token: await getIt<TokenStorage>().getToken(),\n    );\n\n    return Future.value(res.data['success'] == true ? true : false);\n  }\n}\n"
+        }
+    ]
+}
